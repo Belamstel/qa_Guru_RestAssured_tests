@@ -4,10 +4,12 @@ import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+import model.SingleResourseResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static utils.FileUtils.readStringFromFile;
@@ -22,14 +24,18 @@ public class RegressInTests {
 
     @Test
     void getSingleResourseTest() {
-        given()
+        SingleResourseResponse singleResourseResponse = given()
                 .when()
                 .get("/unknown/2")
                 .then()
                 .statusCode(200)
                 .log().body()
-                .body("data.id", is("2"))
-                .body("name", is(notNullValue()));
+                .extract().as(SingleResourseResponse.class);
+        Integer id = singleResourseResponse.getData().getId();
+        String name = singleResourseResponse.getData().getName();
+
+        assertThat(id,is(2));
+        assertThat(name,is(notNullValue()));
     }
 
     @Test
@@ -60,7 +66,7 @@ public class RegressInTests {
                 .when()
                 .put("/users/2")
                 .then()
-                .statusCode(201)
+                .statusCode(200)
                 .log().body()
                 .body("job", is("zion resident"));
     }
@@ -77,7 +83,7 @@ public class RegressInTests {
     @Test
     void unsuccessLoginUserTest() {
         String data = "{\n" +
-                "    \"email\": \"peter@klaven\",\n" +
+                "    \"email\": \"peter@klaven\"\n" +
                 "}";
         given()
                 .contentType(ContentType.JSON)
