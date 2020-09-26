@@ -5,20 +5,22 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import model.SingleResourseResponse;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static filter.LogFilter.filters;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static utils.FileUtils.readStringFromFile;
 
-public class RegressInTests {
+public class ReqresTests {
 
-    @BeforeEach
-    void beforeEach() {
-        RestAssured.filters(new AllureRestAssured());
+    @BeforeAll
+    static void beforeAll() {
+        RestAssured.filters(new AllureRestAssured().setRequestTemplate("request.ftl").setResponseTemplate("response.ftl"));
         RestAssured.baseURI = "https://reqres.in/api";
     }
 
